@@ -1,4 +1,3 @@
-// imports
 const events = require('events');
 const ioHook = require('iohook');
 const OSClipboard = require('clipboardy');

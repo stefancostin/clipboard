@@ -45,6 +45,7 @@ function readFromBuffer() {
         console.error(err);
         reject();
       } else {
+        data = 'dadada';
         resolve(data);
       }
     });
