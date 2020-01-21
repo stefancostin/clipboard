@@ -40,15 +40,11 @@ function registerEventListener() {
   const eventEmitter = new events.EventEmitter();
 
   fileSystem.watchBufferChanges(eventEmitter);
-  eventEmitter.on(Events.BUFFER_UPDATE, updateClipboard);
+  eventEmitter.on(Events.BUFFER_UPDATE, updateClipboardHandler);
 }
 
-function updateClipboard() {
+function updateClipboardHandler() {
   fileSystem.readFromBuffer().then((buffer) => {
     OSClipboard.writeSync(buffer);
   });
 }
-
-// Run this as a daemon
-// Libraries: daemonize2, Forever
-
