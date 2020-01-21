@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { directoryPath, fileName, buffer } = require('./config');
+const { Events } = require('./constants');
 
 function checkFileSystem() {
   return new Promise((resolve, reject) => {
@@ -37,36 +38,31 @@ function checkFileSystem() {
   });
 }
 
-function watchForBufferChanges() {
-  fs.watchFile(buffer, (current, previous) => {
-    console.log(`${buffer} file Changed`);
-    console.log('current', current)
-    console.log('previous', previous)
+function readFromBuffer() {
+  return new Promise((resolve, reject) => {
+    fs.readFile(buffer, { encoding: 'utf-8' }, (err, data) => {
+      if (err) {
+        console.error(err);
+        reject();
+      } else {
+        resolve(data);
+      }
+    });
   });
 }
 
-function writeToBuffer(clipboardContent) {
-  fs.writeFile(buffer, clipboardContent, (err) => {
+function watchBufferChanges(eventEmitter) {
+  fs.watchFile(buffer, { interval: 3500 }, (current, previous) => {
+    eventEmitter.emit(Events.BUFFER_UPDATE);
+  });
+}
+
+function writeToBuffer(clipboard) {
+  fs.writeFile(buffer, clipboard, (err) => {
     if (err) {
       console.error(err);
     }
   });
 }
 
-/**
- * Restructuring
- */
-// function isDirectoryAccesible() {
-//   return new Promise((resolve, reject) => {
-//     fs.access(directoryPath, fs.F_OK, (err) => {
-//       if (err) {
-//         console.error(err);
-//         console.warn('Directory does not exist or directory is not accessible.');
-//         reject();
-//       }
-//       resolve();
-//     });
-//   });
-// }
-
-module.exports = { checkFileSystem, watchForBufferChanges, writeToBuffer };
+module.exports = { checkFileSystem, watchBufferChanges, readFromBuffer, writeToBuffer };
