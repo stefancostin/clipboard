@@ -19,5 +19,6 @@
   "dependencies": {
     "clipboardy": "^2.1.0",
     "iohook": "^0.6.2"
-  }
+  },
+  "devDependencies": {}
 }
