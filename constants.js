@@ -1,27 +1,11 @@
-const keys = Object.freeze({
-
-	linux: Object.freeze({
-		cKey: 99,
-		vKey: 118
-	}),
-
-	windows: Object.freeze({
-		cKey: 67,
-		vKey: 86
-	})
-
+const Keys = Object.freeze({
+	LINUX_C_KEY: 99,
+	WIN_C_KEY: 67,
 });
 
+const HostState = Object.freeze({
+	READ: 0,
+	WRITE: 1
+});
 
-// const keys = Object.freeze({
-// 	linux: {
-// 		cKey: 99,
-// 		vKey: 118
-// 	},
-// 	windows: {
-// 		cKey: 67,
-// 		vKey: 86
-// 	}
-// });
-
-module.exports = Object.freeze({ keys });
+module.exports = Object.freeze({ Keys, HostState });

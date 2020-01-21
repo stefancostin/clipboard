@@ -1,47 +1,32 @@
-const fs = require('fs');
-/* packages */
+// imports
 const ioHook = require('iohook');
 const OSClipboard = require('clipboardy');
-/* utilities */
-const { directoryPath, file } = require('./config');
-const { keys } = require('./constants');
+const fileSystem = require('./file-system');
+const { Keys, HostState } = require('./constants');
 
-function startClipboardDaemon() {
+// process state
+const currentNode = HostState.READ;
+
+
+fileSystem.checkFileSystem().then(
+  initClipboardProcess()
+);
+
+function initClipboardProcess() {
   ioHook.on("keypress", event => {
-    // console.log(event);
 
-    if (event.ctrlKey && (
-      event.rawcode === keys.linux.cKey || event.keycode === keys.windows.cKey)
+    if (event.ctrlKey &&
+      (event.rawcode === Keys.LINUX_C_KEY || event.keycode === Keys.WIN_C_KEY)
     ) {
       console.log('\n CTRL + C \n');
 
       // write from operating system clipboard to buffer
       OSClipboard.read().then((clipboard) => {
-        fs.writeFile(file, clipboard, (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-
-          // read from file
-          fs.readFile(file, { encoding: 'utf-8' }, (err, data) => {
-            if (err) {
-              console.error(err);
-            } else {
-              // write to the operating system clipboard of listening node
-              OSClipboard.writeSync(data);
-            }
-          });
-
-        });
+        fileSystem.writeToBuffer(clipboard);
       });
     }
 
-    if (event.ctrlKey && (
-      event.rawcode === keys.linux.vKey || event.keycode === keys.windows.vKey)
-    ) {
-      console.log('\n CTRL + V \n');
-    }
+    fileSystem.watchForBufferChanges();
 
     // OSClipboard.writeSync('🦄');
     // OSClipboard.readSync();
@@ -51,50 +36,22 @@ function startClipboardDaemon() {
 }
 
 
-// directory is accesible
-fs.access(directoryPath, fs.F_OK, (err) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
 
-  // is file accesible
-  fs.access(file, fs.F_OK, (err) => {
-    if (err) {
-
-      // if file is not found, then create file
-      fs.writeFile(file, '', (err) => {
-        if (err) {
-          console.error(err);
-          console.warn('You do not have the admin rights to create and write to file')
-          return;
-        }
-      });
-    }
-
-    // buffer file already exists
-    console.log('buffer exists', file);
-    startClipboardDaemon();
-  });
-});
 
 /**
- * Restructuring
+ * CHANGE THIS FOR THE WRITING NODE TO BE
+ * LISTENING FOR FILE CHANGES AND THEN UPDATE
  */
-// function isDirectoryAccesible() {
-//   return new Promise((resolve, reject) => {
-//     fs.access(directoryPath, fs.F_OK, (err) => {
-//       if (err) {
-//         console.error(err);
-//         console.warn('Directory does not exist or directory is not accessible.');
-//         reject();
-//       }
-//       resolve();
-//     });
-//   });
-// }
-
-
+// read from file
+// fs.readFile(buffer, { encoding: 'utf-8' }, (err, data) => {
+//   if (err) {
+//     console.error(err);
+//   } else {
+//     // data = 'dadada';
+//     // write to the operating system clipboard of listening node
+//     OSClipboard.writeSync(data);
+//   }
+// });
 
 // Run this as a daemon
 // Libraries: daemonize2, Forever
