@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { buffer, directoryPath, fileName, refreshRate } = require('./config');
+const { buffer, bufferRefreshRate, directoryPath, fileName } = require('./config');
 const { Events } = require('./constants');
 
 function checkFileSystem() {
@@ -56,7 +56,7 @@ function readFromBuffer() {
 }
 
 function watchBufferChanges(eventEmitter) {
-  fs.watchFile(buffer, { interval: refreshRate }, (current, previous) => {
+  fs.watchFile(buffer, { interval: bufferRefreshRate }, (curr, prev) => {
     eventEmitter.emit(Events.BUFFER_UPDATE);
   });
 }
@@ -68,5 +68,9 @@ function writeToBuffer(clipboard) {
     }
   });
 }
+
+// function watchClipboardChanges(OSClipboard, eventEmitter) {
+//   fs.createReadStream(stream)
+// }
 
 module.exports = { checkFileSystem, watchBufferChanges, readFromBuffer, writeToBuffer };

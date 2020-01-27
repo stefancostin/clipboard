@@ -2,18 +2,28 @@ const events = require('events');
 const ioHook = require('iohook');
 const OSClipboard = require('clipboardy');
 const fileSystem = require('./file-system');
+const { clipboardRefreshRate } = require('./config');
 const { Events, Keys } = require('./constants');
+
+let clipboardCache;
 
 init();
 
 function init() {
   fileSystem.checkFileSystem().then(() => {
-    startClipboard();
-    registerEventListener();
+    registerKeyboardEventListener();
+    registerBufferEventListener();
+    registerOSClipboardListener();
   });
 }
 
-function startClipboard() {
+function initClipboardCache() {
+  OSClipboard.read().then((clipboard) => {
+    clipboardCache = clipboard
+  });
+}
+
+function registerKeyboardEventListener() {
   ioHook.on(Events.KEYPRESS, event => {
 
     if (event.ctrlKey && (
@@ -27,7 +37,7 @@ function startClipboard() {
 
       // write from operating system clipboard to buffer
       OSClipboard.read().then((clipboard) => {
-        fileSystem.writeToBuffer(clipboard);
+        writeToBuffer(clipboard);
       });
     }
 
@@ -36,15 +46,38 @@ function startClipboard() {
   ioHook.start();
 }
 
-function registerEventListener() {
+function registerBufferEventListener() {
   const eventEmitter = new events.EventEmitter();
 
   fileSystem.watchBufferChanges(eventEmitter);
   eventEmitter.on(Events.BUFFER_UPDATE, updateClipboardHandler);
 }
 
+function registerOSClipboardListener() {
+  initClipboardCache();
+  setInterval(synchronizeBufferHandler, clipboardRefreshRate);
+}
+
+function synchronizeBufferHandler() {
+  OSClipboard.read().then((clipboard) => {
+    if (clipboardCache !== clipboard) {
+      writeToBuffer(clipboard);
+    }
+  });
+}
+
 function updateClipboardHandler() {
   fileSystem.readFromBuffer().then((buffer) => {
-    OSClipboard.writeSync(buffer);
+    writeToClipboard(buffer);
   });
+}
+
+function writeToBuffer(clipboard) {
+  clipboardCache = clipboard;
+  fileSystem.writeToBuffer(clipboard);
+}
+
+function writeToClipboard(buffer) {
+  clipboardCache = buffer;
+  OSClipboard.writeSync(buffer);
 }
