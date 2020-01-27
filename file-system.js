@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { directoryPath, fileName, buffer } = require('./config');
+const { buffer, directoryPath, fileName, refreshRate } = require('./config');
 const { Events } = require('./constants');
 
 function checkFileSystem() {
@@ -52,7 +52,7 @@ function readFromBuffer() {
 }
 
 function watchBufferChanges(eventEmitter) {
-  fs.watchFile(buffer, { interval: 3500 }, (current, previous) => {
+  fs.watchFile(buffer, { interval: refreshRate }, (current, previous) => {
     eventEmitter.emit(Events.BUFFER_UPDATE);
   });
 }
