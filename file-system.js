@@ -69,8 +69,4 @@ function writeToBuffer(clipboard) {
   });
 }
 
-// function watchClipboardChanges(OSClipboard, eventEmitter) {
-//   fs.createReadStream(stream)
-// }
-
 module.exports = { checkFileSystem, watchBufferChanges, readFromBuffer, writeToBuffer };
