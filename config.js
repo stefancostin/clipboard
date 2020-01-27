@@ -1,7 +1,7 @@
 const BUFFER_REFRESH_RATE = 1000;    // miliseconds
 const CLIPBOARD_REFRESH_RATE = 2000; // miliseconds
 
-const DIR_PATH = 'Y:\\Redirected_Profile\\';
+const DIR_PATH = '/home/stefan/Workspace/Projects/Node/';
 const FILE_NAME = 'clipboard-buffer.txt';
 
 module.exports = Object.freeze({ 

@@ -12,7 +12,7 @@ init();
 function init() {
   fileSystem.checkFileSystem().then(() => {
     registerKeyboardEventListener();
-    registerBufferEventListener();
+    registerBufferUpdateEventListener();
     registerOSClipboardListener();
   });
 }
@@ -46,7 +46,7 @@ function registerKeyboardEventListener() {
   ioHook.start();
 }
 
-function registerBufferEventListener() {
+function registerBufferUpdateEventListener() {
   const eventEmitter = new events.EventEmitter();
 
   fileSystem.watchBufferChanges(eventEmitter);
