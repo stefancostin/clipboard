@@ -14,6 +14,9 @@ function checkFileSystem() {
     fs.access(directoryPath, fs.F_OK, (err) => {
       if (err) {
         console.error(err);
+        console.warn('Please make sure that the folder structure exists on the shared drive.\n' +
+         'You can either create the folder structure on the shared drive ' + 
+         'or choose to change the directory path in the config.js file.');
         reject();
       }
 
@@ -32,6 +35,7 @@ function checkFileSystem() {
         }
 
         // buffer file is ready
+        console.log('Clipboard has started listening for events.');
         resolve();
       });
     });
