@@ -17,12 +17,12 @@ function startClipboard() {
   ioHook.on(Events.KEYPRESS, event => {
 
     if (event.ctrlKey && (
-      event.keycode === Keys.WIN_C_KEY ||
-      event.keycode === Keys.WIN_X_KEY ||
-      event.rawcode === Keys.LINUX_C_KEY_UPPER ||
-      event.rawcode === Keys.LINUX_C_KEY_LOWER ||
-      event.rawcode === Keys.LINUX_X_KEY_UPPER ||
-      event.rawcode === Keys.LINUX_X_KEY_LOWER)
+      event.keycode === Keys.KEYCODE_C_KEY ||
+      event.keycode === Keys.KEYCODE_X_KEY ||
+      event.rawcode === Keys.RAWCODE_C_KEY_UPPER ||
+      event.rawcode === Keys.RAWCODE_C_KEY_LOWER ||
+      event.rawcode === Keys.RAWCODE_X_KEY_UPPER ||
+      event.rawcode === Keys.RAWCODE_X_KEY_LOWER)
     ) {
 
       // write from operating system clipboard to buffer
