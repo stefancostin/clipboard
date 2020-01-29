@@ -3,6 +3,10 @@ const Events = Object.freeze({
 	KEYPRESS: 'keypress'
 });
 
+const Errors = Object.freeze({
+	READ_RESTRICTED_ON_SLEEP_MODE: 101
+});
+
 const Keys = Object.freeze({
 	RAWCODE_C_KEY_LOWER: 99,
 	RAWCODE_C_KEY_UPPER: 67,
@@ -12,4 +16,4 @@ const Keys = Object.freeze({
 	KEYCODE_X_KEY: 88
 });
 
-module.exports = Object.freeze({ Events, Keys });
+module.exports = Object.freeze({ Events, Errors, Keys });

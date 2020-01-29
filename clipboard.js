@@ -3,7 +3,7 @@ const ioHook = require('iohook');
 const OSClipboard = require('clipboardy');
 const fileSystem = require('./file-system');
 const { clipboardRefreshRate } = require('./config');
-const { Events, Keys } = require('./constants');
+const { Events, Errors, Keys } = require('./constants');
 
 let clipboardCache;
 
@@ -11,6 +11,7 @@ init();
 
 function init() {
   fileSystem.checkFileSystem().then(() => {
+    initClipboardCache();
     registerKeyboardEventListener();
     registerBufferUpdateEventListener();
     registerOSClipboardListener();
@@ -19,7 +20,7 @@ function init() {
 
 function initClipboardCache() {
   OSClipboard.read().then((clipboard) => {
-    clipboardCache = clipboard
+    clipboardCache = clipboard;
   });
 }
 
@@ -37,7 +38,9 @@ function registerKeyboardEventListener() {
 
       // write from operating system clipboard to buffer
       OSClipboard.read().then((clipboard) => {
-        writeToBuffer(clipboard);
+        if (clipboardCache !== clipboard) {
+          writeToBuffer(clipboard);
+        }
       });
     }
 
@@ -54,7 +57,6 @@ function registerBufferUpdateEventListener() {
 }
 
 function registerOSClipboardListener() {
-  initClipboardCache();
   setInterval(synchronizeBufferHandler, clipboardRefreshRate);
 }
 
@@ -62,6 +64,10 @@ function synchronizeBufferHandler() {
   OSClipboard.read().then((clipboard) => {
     if (clipboardCache !== clipboard) {
       writeToBuffer(clipboard);
+    }
+  }).catch(err => {
+    if (err.code !== Errors.READ_RESTRICTED_ON_SLEEP_MODE) {
+      console.error(err);
     }
   });
 }
