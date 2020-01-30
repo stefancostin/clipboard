@@ -2,8 +2,9 @@ const events = require('events');
 const ioHook = require('iohook');
 const OSClipboard = require('clipboardy');
 const fileSystem = require('./file-system');
+const errorHandler = require('./error-handler');
 const { clipboardRefreshRate } = require('./config');
-const { Events, Errors, Keys } = require('./constants');
+const { Events, Keys } = require('./constants');
 
 let clipboardCache;
 
@@ -15,13 +16,13 @@ function init() {
     registerKeyboardEventListener();
     registerBufferUpdateEventListener();
     registerOSClipboardListener();
-  });
+  }).catch(errorHandler.handleApplicationInitError);
 }
 
 function initClipboardCache() {
   OSClipboard.read().then((clipboard) => {
     clipboardCache = clipboard;
-  });
+  }).catch(errorHandler.handleReadFromClipboardError);
 }
 
 function registerKeyboardEventListener() {
@@ -41,7 +42,7 @@ function registerKeyboardEventListener() {
         if (clipboardCache !== clipboard) {
           writeToBuffer(clipboard);
         }
-      });
+      }).catch(errorHandler.handleReadOnKeyboardEventError);
     }
 
   });
@@ -65,17 +66,13 @@ function synchronizeBufferHandler() {
     if (clipboardCache !== clipboard) {
       writeToBuffer(clipboard);
     }
-  }).catch(err => {
-    if (err.code !== Errors.READ_RESTRICTED_ON_SLEEP_MODE) {
-      console.error(err);
-    }
-  });
+  }).catch(errorHandler.handleReadOnLoopError);
 }
 
 function updateClipboardHandler() {
   fileSystem.readFromBuffer().then((buffer) => {
     writeToClipboard(buffer);
-  });
+  }).catch(handleReadFromBufferError);
 }
 
 function writeToBuffer(clipboard) {
