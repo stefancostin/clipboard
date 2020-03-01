@@ -72,7 +72,7 @@ function synchronizeBufferHandler() {
 function updateClipboardHandler() {
   fileSystem.readFromBuffer().then((buffer) => {
     writeToClipboard(buffer);
-  }).catch(handleReadFromBufferError);
+  }).catch(errorHandler.handleReadFromBufferError);
 }
 
 function writeToBuffer(clipboard) {

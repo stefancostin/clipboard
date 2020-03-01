@@ -1,26 +1,32 @@
 const { Errors } = require('./constants');
 
 function handleApplicationInitError(err) {
-  console.error('\nThe application is shutting down. \nPlease make sure that ' + 
-  'the file and directory path on the drive match the ones in the config file.');
+  console.error('The application is shutting down. Please make sure that ' +
+    'the file and directory path on the drive match the ones in the config file.');
 }
 
 function handleReadFromBufferError(err) {
-  const errorMessage = '\nThere was a problem while reading from the buffer.' + 
-  '\nThe drive or buffer file was not accessible or you don\'t have permission.';
+  const errorMessage = 'There was a problem while reading from the buffer. ' +
+    'The drive or buffer file was not accessible or you don\'t have permission.';
   console.error(err, errorMessage);
 }
 
 function handleReadFromClipboardError(err) {
-  const errorMessage = '\nUnable to read from the operating system clipboard.';
-  console.error(err, errorMessage);
+  if (_isFileCopyError(err)) {
+    // suppress error when user copies an entire file
+  } else {
+    const errorMessage = 'Unable to read from the operating system clipboard.';
+    console.error(err, errorMessage);
+  }
 }
 
 function handleReadOnKeyboardEventError(err) {
   if (_isFileCopyError(err)) {
     // suppress error when user copies an entire file
   } else {
-    console.error(err);
+    const errorMessage = 'Unable to read from the operating system clipboard ' +
+      'on key press event.';
+    console.error(err, errorMessage);
   }
 }
 
@@ -29,7 +35,9 @@ function handleReadOnLoopError(err) {
     // suppress error when user copies an entire file
     // suppress error when computer is on sleep mode
   } else {
-    console.error(err);
+    const errorMessage = 'Unable to read from the operating system clipboard ' +
+    'on synchronization loop.';
+    console.error(err, errorMessage);
   }
 }
 
